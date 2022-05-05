@@ -1,6 +1,6 @@
 import picodisplay as display
 import json
-
+from math import trunc
 width = display.get_width()
 height = display.get_height()
 
@@ -12,26 +12,41 @@ holoBlue = display.create_pen(144,222,255)
 
 print(width, height)
 
-def span(call):
+def span(types, mod):
     '''
-        adding various span type and including a second argument for this function tp define a header span,
+        [x] adding various span type and including a second argument for this function tp define a header span,
         a button span, or frame span so that this function can be more flexible in its naming schema
+        
+        [] added arguments, and reformatted json for adding the additional span types
     '''
     jsonSpan = """{
 
-        "full":240
-        "three_quarter":180,
-        "half": 120,
-        "quarter": 60
+        "headerSpans": {
+
+            "full":240
+            "three_quarter":180,
+            "half": 120,
+            "quarter": 60
+        },
+
+        "buttonSpans": {
+
+            "buttonSmall": 53,
+            "buttonMedium": 67,
+            "buttonLarge": 83,
+            "y": 23
+
+        }    
 
 }"""
-    span = json.loads(jsonSpan)
-    return span[call]
+    spanType = json.loads(jsonSpan)
+    return spanType[types][mod]
 
 def element(ele, call):
+    
     jsonElements = """{
 
-        "header": {
+        "headers": {
 
             "bold":23,
             "medium":13,
@@ -40,7 +55,9 @@ def element(ele, call):
     },
 
         "tabs": {
-
+        
+            "width": 13,
+            "height": 9,
             "empty":true,
             "filled":false
 
@@ -54,12 +71,12 @@ def element(ele, call):
 
     }
 }"""
-    element = json.loads(jsonElements)
-    return element[ele][call]
+    elements = json.loads(jsonElements)
+    return elements[ele][call]
 
 def elemPos(quad, pos):
-
-    jsonPos = """{
+    
+    elemPos = """{
     
         "top": {
 
@@ -89,13 +106,28 @@ def elemPos(quad, pos):
         }
 
 }"""
-
-    posXY = json.loads(jsonPos)
+    
+    posXY = json.loads(elemPos)
     return posXY[quad][pos]
 
- 
+
 print(elemPos("top","right"))
 display.set_pen(holoBlue)
     
-display.rectangle(elemPos("top","center"),elemPos("top","y") ,span("quarter"),element("header","bold"))
+display.rectangle(elemPos("top","left"),elemPos("top","y") ,span("headerSpans", "full"), element("headers","light"))
+# button test
+display.rectangle(elemPos("middle", "center"), elemPos("middle","y"), span("buttonSpans", "buttonSmall"), span("buttonSpans", "y"))
+
+#def textHandler(quad, pos):
+    
+#    pass
+    
+    
+#textHandler()
+    
+
+    
+
+ 
+
 display.update()    
